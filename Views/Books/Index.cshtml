@@ -1,0 +1,42 @@
+@model List<Book>;
+<h1>Welcome to universal Book list.a Here you can watch books, <a asp-action="Create">Create</a> new books,a or Edit exisintg ones along with reviews.</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genre</th>            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string selectedRow = "";
+            if (item.Id == (int?)ViewData["InstructorID"])
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Author)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishedYear)
+                </td>
+                <td>
+                    <p>
+        <a asp-action="Reviews" asp-route-id="@item.Id">Reviews</a> |
+        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+           }
+    </tbody>
+</table>

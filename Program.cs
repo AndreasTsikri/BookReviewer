@@ -26,6 +26,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Initialize the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
+    await DbInitializer.InitializeAsync(context);
+}
+
 app.UseRouting();
 
 app.UseHttpsRedirection();
