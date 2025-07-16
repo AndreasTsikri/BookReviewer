@@ -1,8 +1,11 @@
+using System.Text;
 using AutoMapper;
 using BookReviewer.Data;
 using BookReviewer.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -22,12 +25,36 @@ public class BooksController : Controller
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string tso, string gso, string aso, string searchStr)
     {
+        bool isAsc(string s) => s == "asc" ;
+        
+        var model = _ctx.Books.AsNoTracking();
+        ViewBag.TitleSortParm = tso == "desc"? "asc" : "desc";
+        ViewBag.GenreSortParam = gso == "desc" ? "asc" : "desc";
+        ViewBag.AuthorSortParm = aso == "desc" ? "asc" : "desc";
+        ViewBag.SearchStr = !string.IsNullOrEmpty(searchStr) ? searchStr : "";
+
+        if (tso != null)
+            model = isAsc(tso!) ? model.OrderBy(b => b.Title) : model.OrderByDescending(b => b.Title);
+        if(gso != null)
+            model = isAsc(gso!) ? model.OrderBy(b => b.Genre) : model.OrderByDescending(b => b.Genre);
+        if(aso != null)
+            model = isAsc(aso!) ? model.OrderBy(b => b.Author) : model.OrderByDescending(b => b.Author);
+
+        if (!string.IsNullOrEmpty(searchStr))
+           model = model.Where(b => b.Title.Contains(searchStr));
         // var model = new BooksViewModel();
-        // model.Books = await _ctx.Books.AsNoTracking().ToListAsync();
-        var model = await _ctx.Books.AsNoTracking().ToListAsync();
-        return View(model);
+            // model.Books = await _ctx.Books.AsNoTracking().ToListAsync();
+
+            return View(await model.ToListAsync());
+    }
+    enum sortOrder
+    {
+        title_asc = 0,
+        title_desc,
+        genre_desc,
+        genre_asc
     }
 
     /// <summary>

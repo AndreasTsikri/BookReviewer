@@ -1,11 +1,24 @@
 @model List<Book>;
-<h1>Welcome to universal Book list.a Here you can watch books, <a asp-action="Create">Create</a> new books,a or Edit exisintg ones along with reviews.</h1>
+<h4>Welcome to universal Book list.a Here you can watch books, <a asp-action="Create">Create</a> new books,a or Edit exisintg ones along with reviews.</h4>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            <label>Find by Title: <input type="text" name="SearchStr" value="@ViewBag.SearchStr" /></label>
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Genre</th>            
+            <!--<th>Title</th>-->
+            <!--<th>Genre</th>-->            
+            <!--<th>Author</th>-->
+            <th>@Html.ActionLink("Title", "Index", new { tso = ViewBag.TitleSortParm}, null)</th>
+            <th>@Html.ActionLink("Author", "Index",new { gso = ViewBag.GenreSortParam}, null)</th>
+            <th>@Html.ActionLink("Genre", "Index",new { aso = ViewBag.AuthorSortParm}, null)</th>
             <th></th>
         </tr>
     </thead>
