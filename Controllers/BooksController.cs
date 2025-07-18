@@ -78,10 +78,18 @@ public class BooksController : Controller
         return View(book);
     }
 
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Delete(int? id)
+    {
+        ViewBag.BookId = id;
+        return View();
+    }
+
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var b = await _ctx.Books.FindAsync(id);
         if (b != null)
