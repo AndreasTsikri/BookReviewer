@@ -15,7 +15,7 @@ public class BooksController : Controller
 {
     readonly ILogger<BooksController> _logger;
     readonly ApplicationDbContext _ctx;
-    readonly IMapper _mapper;
+    //readonly IMapper _mapper;
 
     public BooksController(ILogger<BooksController> logger, ApplicationDbContext ctx/*, IMapper mapper*/)
     {
@@ -47,7 +47,7 @@ public class BooksController : Controller
         // var model = new BooksViewModel();
             // model.Books = await _ctx.Books.AsNoTracking().ToListAsync();
 
-            return View(await model.ToListAsync());
+        return View(await model.ToListAsync());
     }
     enum sortOrder
     {
@@ -64,6 +64,7 @@ public class BooksController : Controller
     [Authorize]
     public IActionResult Create()
     {
+        ViewBag.Success = false;
         return View();
     }
 
@@ -75,12 +76,13 @@ public class BooksController : Controller
             return View(book);
         await _ctx.Books.AddAsync(book);
         await _ctx.SaveChangesAsync();
+        ViewBag.Success = true;
         return View(book);
     }
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> Delete(int? id)
+    public IActionResult Delete(int? id)
     {
         ViewBag.BookId = id;
         return View();
@@ -105,6 +107,7 @@ public class BooksController : Controller
     [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
+        ViewBag.Success = false;
         if (id == null)
         {
             return NotFound();
@@ -131,16 +134,16 @@ public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Genre,Publi
 
     if (ModelState.IsValid)
     {
-        try
-        {
-            _ctx.Update(book);
-            await _ctx.SaveChangesAsync();
-        
+            try
+            {
+                _ctx.Update(book);
+                await _ctx.SaveChangesAsync();
+                ViewBag.Success = true;        
         }
-        catch (DbUpdateConcurrencyException)
-        {
-            var exists = await _ctx.Books.AnyAsync(b => b.Id == book.Id);
-            if (!exists)
+            catch (DbUpdateConcurrencyException)
+            {
+                var exists = await _ctx.Books.AnyAsync(b => b.Id == book.Id);
+                if (!exists)
                 {
                     return NotFound();
                 }
@@ -148,7 +151,7 @@ public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Genre,Publi
                 {
                     throw;
                 }
-        }
+            }
         return RedirectToAction(nameof(Index));
     }
     return View(book);

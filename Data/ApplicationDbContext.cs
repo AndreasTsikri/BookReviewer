@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext
     {
     }
     public DbSet<Book> Books => Set<Book>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     //public DbSet<Review> Reviews => Set<Review>();
     //  public DbSet<ReviewVote> ReviewVotes => Set<ReviewVote>();
