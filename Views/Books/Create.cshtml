@@ -28,7 +28,7 @@
                 ✅ Successfully inserted!
         </div>
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
                     <input asp-for="Title" class="form-control" />
@@ -73,7 +73,7 @@
     }, 3000); // 3 seconds
   } 
 </script>
-@if(ViewBag.success){
+@if(ViewBag.Success){
 <script>
     showSuccess();
 </script>

@@ -20,4 +20,5 @@ public class Book
     [MaxLength(20, ErrorMessage = "Max 20 characters")]
     public string? Genre { get; set; } = default!;
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    //public virtual IdentityUser User { get; set; } = null!;
 }

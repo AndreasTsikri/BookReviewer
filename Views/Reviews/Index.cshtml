@@ -1,0 +1,47 @@
+<style>
+</style>
+@model ReviewsViewModel;
+<center>
+    <div class = 'd-flex justify-content-center'>
+        <h4>Reviews of the book "@Model.BookTitle - @Model.BookAuthor - @Model.BookPublishedYear"</h4>
+        
+    </div>
+    <p></><a asp-action="Create" asp-route-id =@Model.BookId>Add New Review</a></p>
+</center>
+
+
+@if (Model.Reviews != null)
+{
+    <ul class="list-group">
+        @foreach (var r in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+        {
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    
+                    <small class="text-muted">@r.CreatedAt.ToShortDateString()</small>
+                </div>
+                
+                <div>
+                    @* Display rating as stars *@
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= r.Rating)
+                        {
+                            <span class="text-warning">&#9733;</span> @* filled star *@
+                        }
+                        else
+                        {
+                            <span class="text-muted">&#9734;</span> @* empty star *@
+                        }
+                    }
+                </div>
+
+                <p class="mt-2">@r.Comment</p>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No reviews yet.</p>
+}

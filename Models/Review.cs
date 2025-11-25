@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookReviewer.Models;
 
@@ -23,9 +24,10 @@ public class Review
     [Required]
     public int BookId { get; set; }
 
-    [Required]
-    public string UserId { get; set; } = string.Empty;
+    //[Required]
+    //public string UserId { get; set; } = string.Empty;
+    
     // Navigation properties
     public virtual Book Book { get; set; } = null!;
-    public virtual IdentityUser User { get; set; } = null!;
+    //public virtual IdentityUser User { get; set; } = null!;
 }

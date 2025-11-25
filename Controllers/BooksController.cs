@@ -1,14 +1,8 @@
-using System.Text;
-using AutoMapper;
 using BookReviewer.Data;
 using BookReviewer.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
 namespace BookReviewer.Controllers;
 
 public class BooksController : Controller
@@ -27,27 +21,27 @@ public class BooksController : Controller
     [Authorize]
     public async Task<IActionResult> Index(string tso, string gso, string aso, string searchStr)
     {
-        bool isAsc(string s) => s == "asc" ;
-        
-        var model = _ctx.Books.AsNoTracking();
-        ViewBag.TitleSortParm = tso == "desc"? "asc" : "desc";
+        bool isAsc(string s) => s == "asc";
+
+        ViewBag.TitleSortParm = tso == "desc" ? "asc" : "desc";
         ViewBag.GenreSortParam = gso == "desc" ? "asc" : "desc";
         ViewBag.AuthorSortParm = aso == "desc" ? "asc" : "desc";
         ViewBag.SearchStr = !string.IsNullOrEmpty(searchStr) ? searchStr : "";
+        var books = _ctx.Books.AsNoTracking();
 
         if (tso != null)
-            model = isAsc(tso!) ? model.OrderBy(b => b.Title) : model.OrderByDescending(b => b.Title);
-        if(gso != null)
-            model = isAsc(gso!) ? model.OrderBy(b => b.Genre) : model.OrderByDescending(b => b.Genre);
-        if(aso != null)
-            model = isAsc(aso!) ? model.OrderBy(b => b.Author) : model.OrderByDescending(b => b.Author);
+            books = isAsc(tso!) ? books.OrderBy(b => b.Title) : books.OrderByDescending(b => b.Title);
+        if (gso != null)
+            books = isAsc(gso!) ? books.OrderBy(b => b.Genre) : books.OrderByDescending(b => b.Genre);
+        if (aso != null)
+            books = isAsc(aso!) ? books.OrderBy(b => b.Author) : books.OrderByDescending(b => b.Author);
 
         if (!string.IsNullOrEmpty(searchStr))
-           model = model.Where(b => b.Title.Contains(searchStr));
+            books = books.Where(b => b.Title.Contains(searchStr));
         // var model = new BooksViewModel();
-            // model.Books = await _ctx.Books.AsNoTracking().ToListAsync();
+        // model.Books = await _ctx.Books.AsNoTracking().ToListAsync();
 
-        return View(await model.ToListAsync());
+        return View(await books.ToListAsync());
     }
     enum sortOrder
     {
@@ -125,21 +119,21 @@ public class BooksController : Controller
     [Authorize]
     [ValidateAntiForgeryToken]
     // POST: Movies/Edit/5
-public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Genre,PublishedYear")] Book book)
-{
-    if (id != book.Id)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Genre,PublishedYear")] Book book)
     {
-        return NotFound();
-    }
+        if (id != book.Id)
+        {
+            return NotFound();
+        }
 
-    if (ModelState.IsValid)
-    {
+        if (ModelState.IsValid)
+        {
             try
             {
                 _ctx.Update(book);
                 await _ctx.SaveChangesAsync();
-                ViewBag.Success = true;        
-        }
+                ViewBag.Success = true;
+            }
             catch (DbUpdateConcurrencyException)
             {
                 var exists = await _ctx.Books.AnyAsync(b => b.Id == book.Id);
@@ -152,9 +146,9 @@ public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Genre,Publi
                     throw;
                 }
             }
-        return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index));
+        }
+        return View(book);
     }
-    return View(book);
-}
 
 }
