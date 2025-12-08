@@ -15,6 +15,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI(); // Adds default Identity UI// Add MVC and Razor Pages services
+    
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // Required for Identity Razor Pages
 

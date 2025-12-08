@@ -1,0 +1,107 @@
+using BookReviewer.Data;
+using BookReviewer.Models;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging.Signing;
+
+public class BookService : IService<Book>
+{
+    ApplicationDbContext _ctx;
+    Logger<BookService> _lgr;
+    public BookService(Logger<BookService> lgr, ApplicationDbContext appDbContext){
+        this._ctx = appDbContext;
+        this._lgr = lgr;
+    }
+
+    public async Task<bool> Create(Book b)
+    {
+        try
+        {
+            await _ctx.Books.AddAsync(b);
+            await _ctx.SaveChangesAsync();            
+        }
+        catch
+        {
+            //something wrong - let client hanlde
+            _lgr.Log(LogLevel.Error, $"Problem inserting book {b.Id}");
+            return false;
+        }
+        return true;
+    }
+
+    public async Task<bool> Update(Book b)
+    {
+        try
+        {
+            _ctx.Update(b);
+            await _ctx.SaveChangesAsync();         
+        }
+        catch
+        {
+            //something wrong - let client handle
+            _lgr.Log(LogLevel.Error, $"Problem updating book {b.Id}");
+            return false;
+        }
+        return true;
+    }
+
+    public async Task<bool> Delete(Book b)
+    {
+        try
+        {
+            _ctx.Books.Remove(b);
+            await _ctx.SaveChangesAsync();         
+        }
+        catch
+        {
+            //something wrong - let client handle
+            _lgr.Log(LogLevel.Error, $"Problem deleting book {b.Id}");
+            return false;
+        }
+        return true;
+    }
+
+
+    public async Task<List<Book>> GetValues()
+    {
+        var l = await _ctx.Books.ToListAsync();
+        return l;
+    }
+
+    public IQueryable<Book> GetQueryableNoUpdate()
+    {
+        var l = _ctx.Books.AsNoTracking();
+        return l;
+    }
+
+    public async Task<Book?> GetItemById(int id)
+    {
+        var b = await _ctx.Books.FindAsync(id);
+        return b;
+    }
+
+    public async Task<List<Book>> FilterAndSort(string tso, string gso, string aso, string searchStr)
+    {
+        bool isAsc(string s) => s == "asc";
+
+        var books = GetQueryableNoUpdate();
+
+        if (tso != null)
+            books = isAsc(tso!) ? books.OrderBy(b => b.Title) : books.OrderByDescending(b => b.Title);
+        if (gso != null)
+            books = isAsc(gso!) ? books.OrderBy(b => b.Genre) : books.OrderByDescending(b => b.Genre);
+        if (aso != null)
+            books = isAsc(aso!) ? books.OrderBy(b => b.Author) : books.OrderByDescending(b => b.Author);
+
+        if (!string.IsNullOrEmpty(searchStr))
+            books = books.Where(b => b.Title.Contains(searchStr));
+        return await books.ToListAsync();
+    }
+}
+
+enum sortOrder
+    {
+        title_asc = 0,
+        title_desc,
+        genre_desc,
+        genre_asc
+    }
