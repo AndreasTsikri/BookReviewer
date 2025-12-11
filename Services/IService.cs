@@ -9,7 +9,7 @@ interface IService<T>
     public Task<bool> Create(T item);
     public Task<bool> Update(T item);
     public Task<bool> Delete(T item);
-    public Task<List<T>> GetValues();
+    public Task<IEnumerable<T>> GetValues();
     public IQueryable<T> GetQueryableNoUpdate();
     Task<T?> GetItemById(int id);
 }

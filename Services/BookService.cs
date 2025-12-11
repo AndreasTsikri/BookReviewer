@@ -5,19 +5,30 @@ using NuGet.Packaging.Signing;
 
 public class BookService : IService<Book>
 {
-    ApplicationDbContext _ctx;
-    Logger<BookService> _lgr;
-    public BookService(Logger<BookService> lgr, ApplicationDbContext appDbContext){
-        this._ctx = appDbContext;
-        this._lgr = lgr;
-    }
+    // ApplicationDbContext _ctx;
+    // Logger<BookService> _lgr;
+    // public BookService(Logger<BookService> lgr, ApplicationDbContext appDbContext){
+    //     this._ctx = appDbContext;
+    //     this._lgr = lgr;
+    // }
+    readonly UnitOfWork _uot;
+     Logger<BookService> _lgr;
+    // ApplicationDbContext _ctx;
+    //  public BookService(Logger<BookService> lgr, ApplicationDbContext appDbContext){
+    //      this._ctx = appDbContext;
+    //      this._lgr = lgr;
+    //  }
+    public BookService(Logger<BookService> lgr, UnitOfWork uot){
+          this._lgr = lgr;
+          this._uot = uot;
+      }
 
     public async Task<bool> Create(Book b)
     {
         try
         {
-            await _ctx.Books.AddAsync(b);
-            await _ctx.SaveChangesAsync();            
+            await _uot.BookRepo.AddEntity(b);//_ctx.Books.AddAsync(b);
+            await _uot.SaveAsync();//_ctx.SaveChangesAsync();            
         }
         catch
         {
@@ -32,8 +43,8 @@ public class BookService : IService<Book>
     {
         try
         {
-            _ctx.Update(b);
-            await _ctx.SaveChangesAsync();         
+            _uot.BookRepo.UpdateEntity(b);// _ctx.Update(b);
+            await _uot.SaveAsync();// await _ctx.SaveChangesAsync();         
         }
         catch
         {
@@ -48,8 +59,10 @@ public class BookService : IService<Book>
     {
         try
         {
-            _ctx.Books.Remove(b);
-            await _ctx.SaveChangesAsync();         
+            _uot.BookRepo.DeleteEntity(b);
+            await _uot.SaveAsync();         
+            //_ctx.Books.Remove(b);
+            //await _ctx.SaveChangesAsync();         
         }
         catch
         {
@@ -61,23 +74,11 @@ public class BookService : IService<Book>
     }
 
 
-    public async Task<List<Book>> GetValues()
-    {
-        var l = await _ctx.Books.ToListAsync();
-        return l;
-    }
+    public async Task<IEnumerable<Book>> GetValues() => await _uot.BookRepo.GetValues().ToListAsync();//await _ctx.Books.ToListAsync();;
 
-    public IQueryable<Book> GetQueryableNoUpdate()
-    {
-        var l = _ctx.Books.AsNoTracking();
-        return l;
-    }
+    public IQueryable<Book> GetQueryableNoUpdate() => _uot.BookRepo.GetValues();//_ctx.Books.AsNoTracking();
 
-    public async Task<Book?> GetItemById(int id)
-    {
-        var b = await _ctx.Books.FindAsync(id);
-        return b;
-    }
+    public async Task<Book?> GetItemById(int id) => await _uot.BookRepo.GetById(id);//_ctx.Books.FindAsync(id);
 
     public async Task<List<Book>> FilterAndSort(string tso, string gso, string aso, string searchStr)
     {
