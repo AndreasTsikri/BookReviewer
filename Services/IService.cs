@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-interface IService<T>
+public interface IService<T>
 {
     public Task<bool> Create(T item);
     public Task<bool> Update(T item);

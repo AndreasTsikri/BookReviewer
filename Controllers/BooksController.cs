@@ -15,9 +15,9 @@ public class BooksController : Controller
     //readonly ILogger<BooksController> _logger;
     //readonly ApplicationDbContext _ctx;
     //readonly IMapper _mapper;
-    readonly BookService _bs;
+    readonly IService<Book> _bs;
 
-    public BooksController(BookService bs/*, IMapper mapper*/)
+    public BooksController(IService<Book> bs/*, IMapper mapper*/)
     {
         this._bs = bs;        
     }
@@ -31,7 +31,8 @@ public class BooksController : Controller
         ViewBag.AuthorSortParm = aso == "desc" ? "asc" : "desc";
         ViewBag.SearchStr = !string.IsNullOrEmpty(searchStr) ? searchStr : "";
         
-        var books = await _bs.FilterAndSort(tso,gso, aso, searchStr);
+        var tbs = this._bs as BookService ?? throw new InvalidCastException("Problem when casting book interface");
+        var books = await tbs.FilterAndSort(tso,gso, aso, searchStr);
 
         return View(books);
     }

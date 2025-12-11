@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BookReviewer.Data;
+using BookReviewer.Models;
+using BookReviewer.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");;
@@ -18,6 +20,10 @@ builder.Services
     
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // Required for Identity Razor Pages
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IService<Book>, BookService>();
+builder.Services.AddScoped<IService<Review>, ReviewsService>();
 
 var app = builder.Build();
 

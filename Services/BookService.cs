@@ -12,15 +12,16 @@ public class BookService : IService<Book>
     //     this._lgr = lgr;
     // }
     readonly UnitOfWork _uot;
-     Logger<BookService> _lgr;
+     ILogger<BookService> _lgr;
     // ApplicationDbContext _ctx;
     //  public BookService(Logger<BookService> lgr, ApplicationDbContext appDbContext){
     //      this._ctx = appDbContext;
     //      this._lgr = lgr;
     //  }
-    public BookService(Logger<BookService> lgr, UnitOfWork uot){
+    public BookService(ILogger<BookService> lgr, IUnitOfWork uot){
           this._lgr = lgr;
-          this._uot = uot;
+          this._uot = uot as UnitOfWork 
+          ?? throw new InvalidOperationException("Injected UoW is not the concrete type.");;
       }
 
     public async Task<bool> Create(Book b)

@@ -5,23 +5,23 @@ using NuGet.Packaging.Signing;
 using SQLitePCL;
 
 namespace BookReviewer.Services;
-public class ReviewsService //: IService<Review>
+public class ReviewsService : IService<Review>
 {
     //ApplicationDbContext _ctx;
-    Logger<ReviewsService> _lgr;
+    ILogger<ReviewsService> _lgr;
     readonly UnitOfWork _uot;
     // public ReviewsService(Logger<ReviewsService> lgr, ApplicationDbContext appDbContext){
     //     this._ctx = appDbContext;
     //     this._lgr = lgr;
     // }
     public ReviewsService(
-        Logger<ReviewsService> lgr,
-     ApplicationDbContext appDbContext
-     ,UnitOfWork uot)
+        ILogger<ReviewsService> lgr, IUnitOfWork uot)
     {
         //this._ctx = appDbContext;
         this._lgr = lgr;
-        this._uot = uot;
+        this._uot = uot as UnitOfWork ?? throw new InvalidOperationException("Injected UoW is not the concrete type.");
+
+
     }
 
     public async Task<bool> Create(Review r)

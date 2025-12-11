@@ -3,7 +3,13 @@ using BookReviewer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public class UnitOfWork: IDisposable
+public interface IUnitOfWork
+{
+    Task SaveAsync();
+    void Dispose();
+    
+}
+public class UnitOfWork: IUnitOfWork, IDisposable
 {
     readonly IRepository<Book> _bookRepo;
     readonly IRepository<Review> _reviewsRepo;
