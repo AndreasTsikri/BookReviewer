@@ -29,7 +29,7 @@ public class BookService : IService<Book>
         try
         {
             await _uot.BookRepo.AddEntity(b);//_ctx.Books.AddAsync(b);
-            await _uot.SaveAsync();//_ctx.SaveChangesAsync();            
+            await _uot.SaveAsync<Book>();//_ctx.SaveChangesAsync();            
         }
         catch
         {
@@ -45,7 +45,7 @@ public class BookService : IService<Book>
         try
         {
             _uot.BookRepo.UpdateEntity(b);// _ctx.Update(b);
-            await _uot.SaveAsync();// await _ctx.SaveChangesAsync();         
+            await _uot.SaveAsync<Book>();// await _ctx.SaveChangesAsync();         
         }
         catch
         {
@@ -61,7 +61,7 @@ public class BookService : IService<Book>
         try
         {
             _uot.BookRepo.DeleteEntity(b);
-            await _uot.SaveAsync();         
+            await _uot.SaveAsync<Book>();         
             //_ctx.Books.Remove(b);
             //await _ctx.SaveChangesAsync();         
         }

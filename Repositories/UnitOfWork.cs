@@ -1,11 +1,12 @@
 using BookReviewer.Data;
 using BookReviewer.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 public interface IUnitOfWork
 {
-    Task SaveAsync();
+    Task SaveAsync<T>();
     void Dispose();
     
 }
@@ -35,8 +36,48 @@ public class UnitOfWork: IUnitOfWork, IDisposable
         get => this._reviewsRepo;
     }
 
-    public async Task SaveAsync() => await this._ctx.SaveChangesAsync();
-    
+    public async Task SaveAsync<T>() {
+
+        bool saved = false;
+        while (!saved)
+        {
+            try
+            {
+                await this._ctx.SaveChangesAsync();
+                saved = true;
+            }
+            catch( DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+            {
+                if (entry.Entity is T)
+                {
+                    var proposedValues = entry.CurrentValues;
+                    var databaseValues = await entry.GetDatabaseValuesAsync();
+
+                    foreach (var property in proposedValues.Properties)
+                    {
+                        var proposedValue = proposedValues[property];
+                        var databaseValue = databaseValues!= null ? 
+                        databaseValues[property] : null;
+
+                        //value to be saved on db after conflict
+                        proposedValues[property] = proposedValue;// this can be "databaseValue" also!
+                    }
+                    // Refresh original values to bypass next concurrency check
+                    if(databaseValues != null)
+                        entry.OriginalValues.SetValues(databaseValues);
+                }
+                else
+                {
+                    throw new NotSupportedException(
+                        "Don't know how to handle concurrency conflicts for "
+                        + entry.Metadata.Name);
+                }
+            }
+        }
+    }
+    }
 
     private bool disposed = false;
     protected virtual void Dispose(bool disposing)
