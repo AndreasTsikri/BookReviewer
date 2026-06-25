@@ -108,6 +108,11 @@ public class BooksController : Controller
 
         if (!ModelState.IsValid)
             return View(book);
+            
+        b.Title = book.Title;
+        b.Author = book.Author;
+        b.Genre = book.Genre;
+        b.PublishedYear = book.PublishedYear;
 
         if(!await _bs.Update(b))
             return StatusCode(500, "Problem editing the book ");

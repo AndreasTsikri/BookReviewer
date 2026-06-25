@@ -29,7 +29,7 @@ public class ReviewsService : IService<Review>
         try
         {
            await _uot.ReviewRepo.AddEntity(r); // await _ctx.Reviews.AddAsync(r);
-            await _uot.SaveAsync();// await _ctx.SaveChangesAsync();            
+            await _uot.SaveAsync<Review>();// await _ctx.SaveChangesAsync();
         }
         catch
         {
@@ -50,7 +50,7 @@ public class ReviewsService : IService<Review>
             //_ctx.Update(r);
             //await _ctx.SaveChangesAsync();
             _uot.ReviewRepo.UpdateEntity(r);
-            await _uot.SaveAsync();         
+            await _uot.SaveAsync<Review>();
         }
         catch
         {
@@ -69,9 +69,9 @@ public class ReviewsService : IService<Review>
             // if(r == null)
             //     return false;
             // _ctx.Reviews.Remove(r);
-            // await _ctx.SaveChangesAsync(); 
+            // await _ctx.SaveChangesAsync();
             _uot.ReviewRepo.DeleteEntity(r);
-            await _uot.SaveAsync();
+            await _uot.SaveAsync<Review>();
         }
         catch
         {

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BookReviewer.Data;
 using BookReviewer.Models;
 using BookReviewer.Services;
+using BookReviewer.Middlewares;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");;
@@ -17,7 +19,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
     .AddDefaultUI(); // Adds default Identity UI// Add MVC and Razor Pages services
-    
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(); // Required for Identity Razor Pages
 
@@ -28,15 +30,16 @@ builder.Services.AddScoped<IService<Review>, ReviewsService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    //app.UseDatabaseExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-}
-else
-{
-    app.UseDeveloperExceptionPage();
 }
 
 // Initialize the database
@@ -55,6 +58,8 @@ app.UseRouting();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseCustomException();
 
 app.MapStaticAssets();
 
